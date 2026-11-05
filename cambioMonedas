@@ -1,0 +1,77 @@
+#include <iostream>
+#include <vector>
+#include <algotithm>
+
+using namespace std;
+
+void monedas (const vector<int>& m, int d, vector<int>& s, int& num_monedas) {
+	int n = m.size();
+
+	int inf_val= 999999;
+	vector<vector<int>> T(n, vector<int>(d+1, inf_val));
+	
+	for (int i = 0; i < n; ++i){
+		T[i][0] = 0;
+	}
+
+	for (int j = 1; j <= d; ++j){
+		if(j>=m[0] && T[0][j-m[0]] != inf_val){
+			T[0][j] = 1+T[0][j-m[0]];
+		}
+	}
+
+	for (int i=1; i<n;i++){
+		for(int j=1; j<=d; j++){
+			if(j<m[i] || T[i][j-m[i]] == inf_val){
+				T[i][j];
+			}
+			else{
+				int no_usar = T[i-1][j];
+				int si_usar = 1+ T[i][j-m[i]];
+				
+				T[i][j] = min(no_usar, si_usar);
+			}
+		}
+	}
+
+	num_monedas = T[n-1][d];
+
+	int i = n-1;
+	int j = d;
+
+	fill(s.begin(), s.end(), 0);
+
+	while(i>0 && j>0){
+		if(T[i][j] == T[i-1][j]){
+			i = i-1;
+		}
+		else{
+			s[i]=s[i]+1;
+			j= j-m[i];
+		}
+	}
+	
+	if (j>0 && i == 0){
+		s[0] = s[0] + (j/m[0]);
+	}
+}
+
+
+
+int main(){
+	vector<int> m = {1, 4, 6};
+	int d=8;
+	vector<int> s(m.size(), 0);
+	int num_monedas = 0;
+
+	monedas(m, d, s, num_monedas);
+
+	cout << "Numero minimo de monedas: " << num_monedas << endl;
+	cout << "Monedas usadas: " << endl;
+	for(int i=0;i<m.size;++i){
+		if(s[i] > 0) {
+			cout << "- " << s[i] << "monedas de valor " << m[i] << endl;
+		}
+	}
+	return 0;
+}
